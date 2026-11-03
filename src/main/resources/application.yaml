@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: project1p2
+  flyway:
+    # Migrations live in src/main/resources/db/migration (V1__add_users.sql, ...).
+    locations: classpath:db/migration
+    # An existing local DB already has the V1 `users` table (created by hand before
+    # Flyway was added). Baseline it as V1 instead of failing on a non-empty schema.
+    # A fresh/empty DB (tests, new volumes) is unaffected and runs V1 normally.
+    baseline-on-migrate: true
+  mail:
+    # Local smtp-tester from compose.yaml. Override per environment (SPRING_MAIL_HOST, ...).
+    host: localhost
+    port: 1025
+    properties:
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
+
+app:
+  # Public URL used to build links in emails. Never derived from the request's Host
+  # header, which a client controls.
+  base-url: http://localhost:8080
+  mail-from-name: Project 1p2
+  mail-from-local-part: no-reply
+  mail-from-domain: project1p2.test
+  email-verification-ttl: 24h
+  email-resend-cooldown: 60s

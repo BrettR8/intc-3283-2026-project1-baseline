@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: pageHead('Check your email')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: topNav(${section})}"></nav>
+
+<main class="container auth">
+    <h1>Check your email</h1>
+    <div class="card">
+        <p>Your account has been created. We sent a confirmation link to your email address.</p>
+        <p>Open the link to confirm your address, then sign in. The link expires in
+            <span th:text="${expiresInHours}">24</span> hours.</p>
+    </div>
+    <p class="muted center">
+        Didn't get it? <a th:href="@{/verify-email/resend}">Send a new link</a>
+    </p>
+</main>
+
+<footer th:replace="~{fragments/layout :: pageFooter}"></footer>
+</body>
+</html>

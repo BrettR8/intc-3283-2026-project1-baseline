@@ -1,0 +1,31 @@
+# Dependabot: one grouped minor+patch PR per ecosystem per week, instead of a
+# separate PR for every dependency. Major bumps still arrive individually.
+version: 2
+updates:
+  # Maven (pom.xml): Spring Boot, plugins, and gate tooling.
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "java"]
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      maven-minor-patch:
+        update-types: ["minor", "patch"]
+
+  # compose.yaml: the local Postgres image.
+  - package-ecosystem: "docker-compose"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "docker"]
+    commit-message:
+      prefix: "chore(docker-deps)"
+    groups:
+      docker-minor-patch:
+        update-types: ["minor", "patch"]

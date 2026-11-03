@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:18.6
+    restart: no
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql
+
+  # Local mail sink: captures every email the app sends instead of delivering it.
+  # Inbox UI at http://localhost:8025. Bound to loopback because it accepts mail
+  # from anyone who can reach it and serves an unauthenticated inbox.
+  smtp-tester:
+    image: ghcr.io/sparrowlogic/smtp-tester:0.1.0
+    restart: no
+    ports:
+      - "127.0.0.1:1025:1025"   # SMTP
+      - "127.0.0.1:8025:8025"   # inbox UI + REST API
+    environment:
+      # Refuse mail that breaks an RFC MUST-level rule, so malformed mail fails loudly.
+      SMTP_TESTER_VALIDATION_REJECT_ON: ERROR
+      SMTP_TESTER_SPOOL_DIRECTORY: /data/mail
+    volumes:
+      - mail:/data/mail
+
+volumes:
+  db:
+  mail:

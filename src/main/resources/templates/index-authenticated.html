@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: pageHead('Dashboard')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: topNav(${section})}"></nav>
+
+<div class="shell">
+    <aside th:replace="~{fragments/layout :: sideNav(${section})}"></aside>
+
+    <main class="shell-main">
+        <div class="container">
+            <h1>Dashboard</h1>
+            <p class="muted">Welcome back, <span th:text="${currentUser.displayName}">user</span>.</p>
+
+            <div class="stats">
+                <div class="card stat">
+                    <p class="stat-label">Registered users</p>
+                    <p class="stat-value" th:text="${totalUsers}">0</p>
+                </div>
+                <div class="card stat">
+                    <p class="stat-label">Signed in as</p>
+                    <p class="stat-value small" th:text="${currentUser.email}">email</p>
+                </div>
+            </div>
+
+            <section id="find-users" class="card" aria-labelledby="find-users-heading">
+                <h2 id="find-users-heading">Find users</h2>
+                <form th:action="@{/}" method="get" class="search" role="search">
+                    <label for="q" class="visually-hidden">Search by username or email</label>
+                    <input type="search" id="q" name="q" th:value="${query}"
+                           placeholder="Search by username or email" maxlength="100">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <a th:if="${!#strings.isEmpty(query)}" th:href="@{/}" class="btn btn-secondary">Clear</a>
+                </form>
+
+                <p class="muted small" aria-live="polite"
+                   th:text="${#strings.isEmpty(query)} ? 'Most recently registered users' : ${#lists.size(users)} + ' result(s) for &quot;' + ${query} + '&quot;'">
+                    Most recently registered users
+                </p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th scope="col">Username</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Joined</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(users)}">
+                            <td colspan="4" class="empty"
+                                th:text="${#strings.isEmpty(query)} ? 'No users yet.' : 'No users matching &quot;' + ${query} + '&quot;.'">
+                                No users yet.
+                            </td>
+                        </tr>
+                        <tr th:each="user : ${users}">
+                            <td th:text="${user.username}">username</td>
+                            <td th:text="${user.email}">email</td>
+                            <td>
+                                <span th:if="${user.verified}" class="badge badge-success">Verified</span>
+                                <span th:unless="${user.verified}" class="badge badge-muted">Unverified</span>
+                            </td>
+                            <td class="muted small" th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd')}">date</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<footer th:replace="~{fragments/layout :: pageFooter}"></footer>
+</body>
+</html>

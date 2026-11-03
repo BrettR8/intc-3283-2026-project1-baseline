@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!--/* Shared page chrome. Pages include these with th:replace, e.g.
+       <head th:replace="~{fragments/layout :: pageHead('Dashboard')}"></head>
+       <nav th:replace="~{fragments/layout :: topNav(${section})}"></nav>
+     `section` is the active nav key (home, register, login, dashboard, ...). */-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:fragment="pageHead(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' | Project 1p2'">Project 1p2</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <!-- Apply the saved theme before first paint to avoid a light/dark flash. -->
+    <script>(function(){var t=localStorage.getItem('p1p2-theme');document.documentElement.classList.toggle('dark',t==='dark'||(t===null&&matchMedia('(prefers-color-scheme: dark)').matches));})();</script>
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+
+<body>
+
+<!--/* Top navigation. Links change with authentication state. */-->
+<nav th:fragment="topNav(section)" class="topnav" aria-label="Main">
+    <div class="topnav-inner">
+        <a th:href="@{/}" class="brand">Project 1p2</a>
+
+        <!--/* Signed out: public pages. */-->
+        <th:block sec:authorize="isAnonymous()">
+            <a th:href="@{/}" class="nav-link" th:classappend="${section == 'home'} ? 'active'"
+               th:attr="aria-current=${section == 'home'} ? 'page'">Home</a>
+            <a th:href="@{/register}" class="nav-link" th:classappend="${section == 'register'} ? 'active'"
+               th:attr="aria-current=${section == 'register'} ? 'page'">Register</a>
+        </th:block>
+
+        <!--/* Signed in: app pages. */-->
+        <th:block sec:authorize="isAuthenticated()">
+            <a th:href="@{/}" class="nav-link" th:classappend="${section == 'dashboard'} ? 'active'"
+               th:attr="aria-current=${section == 'dashboard'} ? 'page'">Dashboard</a>
+            <a th:href="@{/} + '#find-users'" class="nav-link">Find users</a>
+        </th:block>
+
+        <div class="nav-right">
+            <th:block sec:authorize="isAuthenticated()">
+                <span class="nav-user">
+                    Signed in as <strong sec:authentication="principal.displayName">user</strong>
+                </span>
+                <!--/* Logout must be a POST; th:action adds the CSRF token. */-->
+                <form th:action="@{/logout}" method="post" class="inline-form">
+                    <button type="submit" class="nav-link">Sign out</button>
+                </form>
+            </th:block>
+            <a sec:authorize="isAnonymous()" th:href="@{/login}" class="btn btn-primary"
+               th:attr="aria-current=${section == 'login'} ? 'page'">Sign in</a>
+            <button type="button" class="icon-btn" data-theme-toggle
+                    title="Toggle theme" aria-label="Toggle light/dark theme">&#9681;</button>
+        </div>
+    </div>
+</nav>
+
+<!--/* Left sidebar for the authenticated shell. One nav item per app module. */-->
+<aside th:fragment="sideNav(section)" class="sidebar" sec:authorize="isAuthenticated()">
+    <nav aria-label="App">
+        <p class="sidebar-heading">App</p>
+        <a th:href="@{/}" class="sidebar-link" th:classappend="${section == 'dashboard'} ? 'active'"
+           th:attr="aria-current=${section == 'dashboard'} ? 'page'">Dashboard</a>
+        <a th:href="@{/} + '#find-users'" class="sidebar-link">Find users</a>
+    </nav>
+</aside>
+
+<footer th:fragment="pageFooter" class="footer">
+    &copy; <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy')}">2026</span> Northwest University
+</footer>
+
+</body>
+</html>

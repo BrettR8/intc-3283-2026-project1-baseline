@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: pageHead('Home')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: topNav(${section})}"></nav>
+
+<main class="container narrow">
+    <section class="hero">
+        <h1>Welcome to Project 1p2</h1>
+        <p class="muted">Create an account or sign in to reach your dashboard and find other users.</p>
+        <div class="actions">
+            <a th:href="@{/register}" class="btn btn-primary">Create an account</a>
+            <a th:href="@{/login}" class="btn btn-secondary">Sign in</a>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: pageFooter}"></footer>
+</body>
+</html>

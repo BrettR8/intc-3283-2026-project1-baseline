@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.1//EN"
+        "https://checkstyle.org/dtds/suppressions_1_1.dtd">
+<!--
+    Intentionally empty. Fix violations at the root instead of suppressing them.
+    `make agent-completion` fails if this file changes, so any entry added here
+    must be a deliberate, reviewed, documented exception.
+-->
+<suppressions>
+</suppressions>

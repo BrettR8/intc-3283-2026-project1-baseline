@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: pageHead('Register')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: topNav(${section})}"></nav>
+
+<main class="container auth">
+    <h1>Create an account</h1>
+
+    <form th:object="${form}" th:action="@{/register}" method="post" class="card form" novalidate>
+        <div class="field">
+            <label for="username">Username <span class="required" aria-hidden="true">*</span></label>
+            <input type="text" th:field="*{username}" autocomplete="nickname" required
+                   th:attr="aria-invalid=${#fields.hasErrors('username')}, aria-describedby=${#fields.hasErrors('username')} ? 'username-error'">
+            <p th:if="${#fields.hasErrors('username')}" id="username-error" class="field-error" th:errors="*{username}"></p>
+        </div>
+        <div class="field">
+            <label for="email">Email address <span class="required" aria-hidden="true">*</span></label>
+            <input type="email" th:field="*{email}" autocomplete="email" required
+                   th:attr="aria-invalid=${#fields.hasErrors('email')}, aria-describedby=${#fields.hasErrors('email')} ? 'email-error'">
+            <p th:if="${#fields.hasErrors('email')}" id="email-error" class="field-error" th:errors="*{email}"></p>
+        </div>
+        <div class="field">
+            <label for="password">Password <span class="required" aria-hidden="true">*</span></label>
+            <!--/* th:value="''" so a rejected form never echoes the password back into the page. */-->
+            <input type="password" th:field="*{password}" th:value="''" autocomplete="new-password" required
+                   th:attr="aria-invalid=${#fields.hasErrors('password')}, aria-describedby=${#fields.hasErrors('password')} ? 'password-error' : 'password-hint'">
+            <p id="password-hint" class="field-hint">At least 8 characters.</p>
+            <p th:if="${#fields.hasErrors('password')}" id="password-error" class="field-error" th:errors="*{password}"></p>
+        </div>
+        <div class="field">
+            <label for="confirmPassword">Confirm password <span class="required" aria-hidden="true">*</span></label>
+            <input type="password" th:field="*{confirmPassword}" th:value="''" autocomplete="new-password" required
+                   th:attr="aria-invalid=${#fields.hasErrors('confirmPassword')}, aria-describedby=${#fields.hasErrors('confirmPassword')} ? 'confirmPassword-error'">
+            <p th:if="${#fields.hasErrors('confirmPassword')}" id="confirmPassword-error" class="field-error"
+               th:errors="*{confirmPassword}"></p>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Register</button>
+    </form>
+
+    <p class="muted center">Already registered? <a th:href="@{/login}">Sign in</a></p>
+</main>
+
+<footer th:replace="~{fragments/layout :: pageFooter}"></footer>
+</body>
+</html>

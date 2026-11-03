@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: pageHead('Resend confirmation')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: topNav(${section})}"></nav>
+
+<main class="container auth">
+    <h1>Resend confirmation link</h1>
+
+    <!--/* Same message whether or not the address is registered. */-->
+    <div th:if="${sent}" class="alert alert-success" role="status">
+        If that address belongs to an account that still needs confirming, a new link is on its way.
+        Any earlier link no longer works.
+    </div>
+
+    <form th:action="@{/verify-email/resend}" method="post" class="card form">
+        <div class="field">
+            <label for="email">Email address</label>
+            <input type="email" id="email" name="email" autocomplete="email" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Send a new link</button>
+    </form>
+
+    <p class="muted center"><a th:href="@{/login}">Back to sign in</a></p>
+</main>
+
+<footer th:replace="~{fragments/layout :: pageFooter}"></footer>
+</body>
+</html>
