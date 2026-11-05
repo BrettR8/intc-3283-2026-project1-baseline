@@ -525,3 +525,8 @@ src/test/java/...                unit tests (*Tests) and integration tests (*IT)
 5. **Controller + template:** add the endpoint and the page.
 6. **Tests:** a unit test for the logic, an integration test for the flow.
 7. **Gate:** `make agent-completion`, then commit.
+
+
+## demo of git pull / branching / PR flow.
+
+this is a change.
