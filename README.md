@@ -308,9 +308,17 @@ set fields like `id` or `verifiedAt`.
 `security/SecurityConfig.java` decides which URLs are public (`PUBLIC_PATHS`)
 and requires sign-in for everything else. Spring Security handles
 `POST /login` and `POST /logout` itself, so there is no controller method for
-them. Every POST form needs a **CSRF token**; `th:action="@{...}"` adds it to
+them. After signing out, the browser is redirected to `GET /logout`, which
+`LogoutController` renders as the signed-out page. Every POST form needs a
+**CSRF token**; `th:action="@{...}"` adds it to
 the form automatically, which is why forms use `th:action` rather than a plain
 `action`.
+
+Errors (exceptions, 404s, security failures) are forwarded to `/error`, which
+`AppErrorController` renders with `templates/error.html` instead of Spring
+Boot's Whitelabel page. With `app.show-stack-traces: true` the page shows the
+exception, message and full stack trace; turn it off in production, since it
+exposes internals.
 
 ---
 

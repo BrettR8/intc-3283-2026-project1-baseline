@@ -15,6 +15,8 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
  * @param mailFromDomain       domain part of the From address
  * @param emailVerificationTtl how long a confirmation link stays valid
  * @param emailResendCooldown  minimum gap between confirmation emails to one account
+ * @param showStackTraces      render exception details and stack traces on the error page;
+ *                             a debugging aid that leaks internals, so turn it off in production
  */
 @ConfigurationProperties("app")
 public record AppProperties(
@@ -23,7 +25,8 @@ public record AppProperties(
         @DefaultValue("no-reply") String mailFromLocalPart,
         @DefaultValue("project1p2.test") String mailFromDomain,
         @DefaultValue("24h") Duration emailVerificationTtl,
-        @DefaultValue("60s") Duration emailResendCooldown) {
+        @DefaultValue("60s") Duration emailResendCooldown,
+        @DefaultValue("false") boolean showStackTraces) {
 
     /** The From address, assembled from its configured parts. */
     public String mailFromAddress() {

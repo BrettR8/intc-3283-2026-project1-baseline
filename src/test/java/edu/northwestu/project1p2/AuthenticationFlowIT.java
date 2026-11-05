@@ -2,6 +2,8 @@ package edu.northwestu.project1p2;
 
 import edu.northwestu.project1p2.entities.User;
 import edu.northwestu.project1p2.repositories.UserRepository;
+import edu.northwestu.project1p2.support.ProtectedProbeController;
+import jakarta.servlet.RequestDispatcher;
 import java.util.UUID;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
@@ -217,9 +220,15 @@ class AuthenticationFlowIT {
 
     @Test
     void protectedPathRedirectsAnonymousUserToLogin() throws Exception {
-        this.mvc.perform(get("/some/protected/page"))
+        this.mvc.perform(get(ProtectedProbeController.PATH))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
+    }
+
+    @Test
+    void unknownPathIsNotFoundEvenWhenSignedOut() throws Exception {
+        this.mvc.perform(get("/some/unknown/page"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -239,11 +248,58 @@ class AuthenticationFlowIT {
         final MockHttpSession session = signIn(email);
 
         this.mvc.perform(post("/logout").with(csrf()).session(session))
-                .andExpect(redirectedUrl("/login?logout"))
+                .andExpect(redirectedUrl("/logout"))
                 .andExpect(unauthenticated());
+
+        this.mvc.perform(get("/logout").session(session))
+                .andExpect(status().isOk())
+                .andExpect(view().name("logout"))
+                .andExpect(content().string(containsString("You have been signed out.")));
 
         this.mvc.perform(get("/").session(session))
                 .andExpect(view().name("index"))
                 .andExpect(content().string(not(containsString("Sign out"))));
+    }
+
+    @Test
+    void signedInGetLogoutAsksForConfirmationAndDoesNotSignOut() throws Exception {
+        final String email = uniqueEmail("confirm-logout");
+        register("stayer", email);
+        final MockHttpSession session = signIn(email);
+
+        this.mvc.perform(get("/logout").session(session))
+                .andExpect(status().isOk())
+                .andExpect(view().name("logout"))
+                .andExpect(content().string(containsString("Are you sure you want to sign out?")))
+                .andExpect(content().string(not(containsString("You have been signed out."))))
+                .andExpect(authenticated());
+    }
+
+    @Test
+    void unhandledExceptionRendersErrorPageWithStackTrace() throws Exception {
+        this.mvc.perform(get("/error")
+                        .accept(MediaType.TEXT_HTML)
+                        .requestAttr(RequestDispatcher.ERROR_STATUS_CODE, 500)
+                        .requestAttr(RequestDispatcher.ERROR_REQUEST_URI, "/boom")
+                        .requestAttr(RequestDispatcher.ERROR_EXCEPTION, new IllegalStateException("kaboom <b>")))
+                .andExpect(status().isInternalServerError())
+                .andExpect(view().name("error"))
+                .andExpect(content().string(containsString("java.lang.IllegalStateException")))
+                .andExpect(content().string(containsString("kaboom &lt;b&gt;")))
+                .andExpect(content().string(containsString("Stack trace")))
+                .andExpect(content().string(containsString("AuthenticationFlowIT")))
+                .andExpect(content().string(not(containsString("Whitelabel"))));
+    }
+
+    @Test
+    void unknownPageRendersNotFoundErrorPage() throws Exception {
+        this.mvc.perform(get("/error")
+                        .accept(MediaType.TEXT_HTML)
+                        .requestAttr(RequestDispatcher.ERROR_STATUS_CODE, 404)
+                        .requestAttr(RequestDispatcher.ERROR_REQUEST_URI, "/missing"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("error"))
+                .andExpect(content().string(containsString("The page you requested does not exist.")))
+                .andExpect(content().string(containsString("/missing")));
     }
 }

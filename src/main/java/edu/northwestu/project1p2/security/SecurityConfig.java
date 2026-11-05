@@ -1,6 +1,7 @@
 package edu.northwestu.project1p2.security;
 
 import java.util.Map;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.DisabledException;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /**
  * Browser security: form login against the {@code users} table, a server-side
@@ -32,18 +34,29 @@ public class SecurityConfig {
     /** The sign-in page; also the URL Spring Security's login filter processes on POST. */
     public static final String LOGIN = "/login";
 
-    /** Paths that must work before sign-in: front door, sign-in, registration, email confirmation, assets. */
+    /**
+     * Sign-out. {@code POST} is processed by Spring Security's logout filter (CSRF
+     * protected); {@code GET} renders the signed-out page (see {@code LogoutController}).
+     */
+    public static final String LOGOUT = "/logout";
+
+    /** Paths that must work before sign-in: front door, sign-in/out, registration, email confirmation, assets. */
     private static final String[] PUBLIC_PATHS = {
-        HOME, LOGIN, "/register", "/error",
+        HOME, LOGIN, LOGOUT, "/register", "/error",
         "/check-email", "/verify-email/**",
         "/css/**", "/js/**", "/images/**", "/favicon.ico",
     };
 
     @Bean
-    public SecurityFilterChain browserSecurityFilterChain(final HttpSecurity http) throws Exception {
+    public SecurityFilterChain browserSecurityFilterChain(
+            final HttpSecurity http,
+            final ObjectProvider<RequestMappingHandlerMapping> handlerMapping) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_PATHS).permitAll()
+                        // No route at this path: let it through so it answers 404, even
+                        // when signed out, instead of redirecting to the login page.
+                        .requestMatchers(new UnmappedRequestMatcher(handlerMapping)).permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage(LOGIN)
@@ -52,8 +65,11 @@ public class SecurityConfig {
                         // Return to the originally requested page, or the dashboard.
                         .defaultSuccessUrl(HOME)
                         .failureHandler(loginFailureHandler()))
+                // With CSRF enabled the logout filter only matches POST /logout, so the
+                // redirect target GET /logout reaches the controller.
                 .logout(logout -> logout
-                        .logoutSuccessUrl(LOGIN + "?logout"));
+                        .logoutUrl(LOGOUT)
+                        .logoutSuccessUrl(LOGOUT));
         return http.build();
     }
 

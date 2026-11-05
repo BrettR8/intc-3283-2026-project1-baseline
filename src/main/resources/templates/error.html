@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!--/* Rendered by AppErrorController for every error (replaces the Whitelabel page).
+       Model: status, title, description, serverError, path, timestamp; exception,
+       message, trace only when app.show-stack-traces is on. All values go through
+       th:text, so neither a path nor an exception message can inject markup. */-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: pageHead(${status} + ' ' + ${title})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: topNav(${section})}"></nav>
+
+<main class="container narrow">
+    <section class="error-page" th:classappend="${serverError} ? 'error-page-server'" aria-labelledby="error-title">
+        <!--/* The big number is decorative; the heading below names the error for screen readers. */-->
+        <p class="error-code" aria-hidden="true" th:text="${status}">404</p>
+        <h1 id="error-title">
+            <span th:text="${title}">Page not found</span>
+            <span class="visually-hidden" th:text="'(error ' + ${status} + ')'">(error 404)</span>
+        </h1>
+        <p class="error-description" th:text="${description}">
+            The page you requested does not exist.
+        </p>
+        <p th:if="${status == 404 and path != null}" class="muted small">
+            No page at <code class="error-path" th:text="${path}">/missing</code>
+        </p>
+
+        <div class="actions">
+            <a sec:authorize="isAuthenticated()" th:href="@{/}" class="btn btn-primary">Back to the dashboard</a>
+            <th:block sec:authorize="!isAuthenticated()">
+                <a th:href="@{/}" class="btn btn-primary">Go to the home page</a>
+                <a th:href="@{/login}" class="btn btn-secondary">Sign in</a>
+            </th:block>
+        </div>
+    </section>
+
+    <!--/* Diagnostics: always the path and time; exception details only when enabled. */-->
+    <details class="card error-diagnostics" th:open="${trace != null}">
+        <summary>Technical details</summary>
+        <dl class="error-details">
+            <dt>Status</dt>
+            <dd th:text="${status} + ' ' + ${error}">404 Not Found</dd>
+            <dt>Path</dt>
+            <dd><code th:text="${path}">/</code></dd>
+            <dt>Time</dt>
+            <dd th:text="${timestamp}">now</dd>
+            <th:block th:if="${exception}">
+                <dt>Exception</dt>
+                <dd><code th:text="${exception}">java.lang.RuntimeException</code></dd>
+            </th:block>
+            <th:block th:if="${message}">
+                <dt>Message</dt>
+                <dd th:text="${message}">message</dd>
+            </th:block>
+        </dl>
+        <section th:if="${trace}" aria-labelledby="trace-heading">
+            <h2 id="trace-heading">Stack trace</h2>
+            <pre class="stack-trace" tabindex="0" th:text="${trace}">trace</pre>
+        </section>
+    </details>
+</main>
+
+<footer th:replace="~{fragments/layout :: pageFooter}"></footer>
+</body>
+</html>

@@ -45,7 +45,7 @@ class VerificationTokensTests {
     void verificationUrlUsesConfiguredBaseUrlAndAssemblesFromAddress() {
         final AppProperties properties = new AppProperties(
                 "https://app.example.test/", "Example", "no-reply", "example.test",
-                Duration.ofHours(24), Duration.ofSeconds(60));
+                Duration.ofHours(24), Duration.ofSeconds(60), false);
 
         assertThat(properties.verificationUrl("abc_-1"))
                 .isEqualTo("https://app.example.test/verify-email?token=abc_-1");

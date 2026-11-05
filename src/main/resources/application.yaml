@@ -26,3 +26,6 @@ app:
   mail-from-domain: project1p2.test
   email-verification-ttl: 24h
   email-resend-cooldown: 60s
+  # Error page shows the exception and full stack trace (AppErrorController).
+  # Development aid only: it exposes internals. Set APP_SHOW_STACK_TRACES=false in production.
+  show-stack-traces: true

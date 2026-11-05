@@ -190,3 +190,23 @@ td.empty { text-align: center; padding: 2rem 0; color: var(--muted); }
 .badge { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: 500; }
 .badge-success { background: var(--success-bg); color: var(--success-text); }
 .badge-muted { background: var(--hover); color: var(--muted); }
+
+/* ── Error page ─────────────────────────────────────────────────── */
+.error-page { text-align: center; padding: 3rem 0 1rem; }
+.error-code {
+    margin: 0; font-size: clamp(4.5rem, 18vw, 7.5rem); font-weight: 800; line-height: 1;
+    letter-spacing: -0.04em; color: var(--accent-text);
+}
+.error-page-server .error-code { color: var(--danger-text); }
+.error-page h1 { margin-top: 0.75rem; font-size: 1.75rem; }
+.error-description { max-width: 32rem; margin: 0.75rem auto 0; color: var(--muted); }
+.error-path { word-break: break-all; }
+.error-diagnostics { margin-top: 2.5rem; }
+.error-diagnostics summary { cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--muted); }
+.error-details { display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem; margin-top: 1rem; }
+.error-details dt { font-weight: 500; color: var(--muted); }
+.error-details dd { margin: 0; word-break: break-word; }
+.stack-trace {
+    overflow: auto; max-height: 32rem; padding: 1rem; font-size: 0.75rem; line-height: 1.4;
+    background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 0.375rem;
+}

@@ -31,8 +31,7 @@ public class LoginController {
             new Notice(ERROR, ERROR, "Invalid email or password.", false),
             new Notice("unverified", ERROR,
                     "Confirm your email address before signing in. Check your inbox for the link.", true),
-            new Notice("verified", SUCCESS, "Email confirmed. You can sign in now.", false),
-            new Notice("logout", SUCCESS, "You have been signed out.", false));
+            new Notice("verified", SUCCESS, "Email confirmed. You can sign in now.", false));
 
     @GetMapping
     public String login(@AuthenticationPrincipal final @Nullable AppUserDetails currentUser,

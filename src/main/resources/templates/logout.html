@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: pageHead('Sign out')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: topNav(${section})}"></nav>
+
+<main class="container auth">
+    <!--/* Normal case: arrived here from POST /logout, session already ended. */-->
+    <th:block sec:authorize="isAnonymous()">
+        <h1>Signed out</h1>
+        <div class="alert alert-success" role="status">You have been signed out.</div>
+        <p class="muted center">
+            <a th:href="@{/login}">Sign in again</a> or return to the <a th:href="@{/}">home page</a>.
+        </p>
+    </th:block>
+
+    <!--/* Still signed in (URL typed directly): signing out must be a POST with a CSRF token. */-->
+    <th:block sec:authorize="isAuthenticated()">
+        <h1>Sign out</h1>
+        <form th:action="@{/logout}" method="post" class="card form">
+            <p>Are you sure you want to sign out?</p>
+            <button type="submit" class="btn btn-primary btn-block">Sign out</button>
+        </form>
+        <p class="muted center"><a th:href="@{/}">Back to the dashboard</a></p>
+    </th:block>
+</main>
+
+<footer th:replace="~{fragments/layout :: pageFooter}"></footer>
+</body>
+</html>
